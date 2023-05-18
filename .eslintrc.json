@@ -1,0 +1,25 @@
+{
+  "extends": ["prettier"],
+  "plugins": ["prettier", "simple-import-sort"],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "rules": {
+    "quotes": ["error", "double"],
+    "prettier/prettier": "error",
+    "no-console": "error",
+    "simple-import-sort/imports": "error",
+    "no-duplicate-imports": "error",
+    "no-unused-vars": ["error", { "args": "all", "argsIgnorePattern": "^_" }],
+    "no-duplicate-case": "error",
+    "no-empty": "error",
+    "no-use-before-define": "error",
+    "class-methods-use-this": "error",
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+    "no-dupe-keys": "error",
+    "no-dupe-args": "error",
+    "no-case-declarations": "error"
+  }
+}
