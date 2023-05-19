@@ -1,5 +1,5 @@
-import { Client, LocalAuth } from "whatsapp-web.js";
 import { spawn, Thread, Worker } from "threads";
+import { Client, LocalAuth } from "whatsapp-web.js";
 
 //
 const fs = require("fs");
@@ -19,32 +19,11 @@ client.on("ready", () => {
   console.log("Client is ready!");
 });
 
-client.on("message", msg => {
-  parseMessage(msg).then(parsedMessage => {
-    //Respond Only if its in accepted format.
-    if (parsedMessage) {
-      // msg.reply("Received.");
-      console.log("Accepted message type");
-      addToQueue(parsedMessage);
-    } else {
-      console.log("Rejected message type");
-    }
-
-    //Print
-    console.log(parsedMessage);
-
-    if (msg.body == "!ping") {
-      msg.reply("Pong.");
-    }
-  });
-  //
-});
-
-async function addToQueue(message) {
+async function addToQueue(message: any) {
   //Download Task
   async function downloadTask() {
     console.log("Downloading...");
-    return message.media.download().then(file => {
+    return message.media.download().then((file: any) => {
       const ext = message.media.specs.mimetype.split("/")[1] || ".jpg";
       //
       try {
@@ -63,6 +42,27 @@ async function addToQueue(message) {
   if (message.type == "media") {
   }
 }
+
+client.on("message", msg => {
+  parseMessage(msg).then((parsedMessage: any) => {
+    //Respond Only if its in accepted format.
+    if (parsedMessage) {
+      // msg.reply("Received.");
+      console.log("Accepted message type");
+      addToQueue(parsedMessage);
+    } else {
+      console.log("Rejected message type");
+    }
+
+    //Print
+    console.log(parsedMessage);
+
+    if (msg.body == "!ping") {
+      msg.reply("Pong.");
+    }
+  });
+  //
+});
 
 //# Init
 // client.initialize();

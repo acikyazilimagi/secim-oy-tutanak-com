@@ -4,7 +4,7 @@
 const { expose } = require("threads");
 
 expose({
-  runner(fn) {
+  runner(fn: any) {
     return fn();
   }
 });

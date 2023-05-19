@@ -1,11 +1,57 @@
-import Message from "whatsapp-web.js/src/structures/Message";
+import WAWebJS from "whatsapp-web.js";
 
-/**
- *
- * @param {Message} msg
- * @returns
- */
-async function parseMessage(msg) {
+type messageType<T> = T extends "text"
+  ? {
+      id: string;
+      timestamp: number;
+      type: "text";
+      message: {
+        isForwarded: boolean;
+        forwardingScore: number;
+        isNewMsg: boolean;
+        body?: string;
+      };
+      author: {
+        id: string;
+        name: string;
+        sender: string;
+        deviceType: string;
+      };
+    }
+  : T extends "media"
+  ? {
+      id: string;
+      timestamp: number;
+      type: "media";
+      message: {
+        isForwarded?: boolean;
+        forwardingScore?: number;
+        isNewMsg?: boolean;
+        body: string;
+      };
+      media: {
+        specs?: {
+          width?: number;
+          height?: number;
+          size?: number;
+          mimetype?: string;
+        };
+        data?: {
+          mediaKey?: string;
+          mediaKeyTimestamp?: number;
+          directPath?: string;
+          filehash?: string;
+          encFilehash?: string;
+        };
+        deprecatedMms3Url?: string;
+        isViewOnce?: boolean;
+        staticUrl?: string;
+        download: () => Promise<WAWebJS.MessageMedia>;
+      };
+    }
+  : never;
+
+async function parseMessage(msg: any) {
   // # Types
   // groups_v4_invite
   // chat
@@ -16,7 +62,7 @@ async function parseMessage(msg) {
   const justText = msg.type == "chat";
 
   if (textWithImage || justText) {
-    const message = {
+    const message: messageType<"text"> = {
       id: msg.id.id,
       timestamp: msg.timestamp || msg.t,
       type: "text",
@@ -36,36 +82,42 @@ async function parseMessage(msg) {
 
     //Media Handling
     if (msg.hasMedia) {
-      message.type = "media";
-      message.message.body = msg._data.caption;
-      message.media = {
-        specs: {
-          width: msg._data.width,
-          height: msg._data.height,
-          size: msg._data.size,
-          mimetype: msg._data.mimetype
+      const mediaMessage: messageType<"media"> = {
+        ...message,
+        type: "media",
+        message: {
+          ...message.message,
+          body: msg._data.caption
         },
-        data: {
-          mediaKey: msg._data.mediaKey,
-          mediaKeyTimestamp: msg._data.mediaKeyTimestamp,
-          directPath: msg._data.directPath,
-          filehash: msg._data.filehash,
-          encFilehash: msg._data.encFilehash
-        },
-
-        deprecatedMms3Url: msg._data.deprecatedMms3Url,
-        isViewOnce: msg._data.isViewOnce,
-        staticUrl: msg._data.staticUrl
+        media: {
+          specs: {
+            width: msg._data.width,
+            height: msg._data.height,
+            size: msg._data.size,
+            mimetype: msg._data.mimetype
+          },
+          data: {
+            mediaKey: msg._data.mediaKey,
+            mediaKeyTimestamp: msg._data.mediaKeyTimestamp,
+            directPath: msg._data.directPath,
+            filehash: msg._data.filehash,
+            encFilehash: msg._data.encFilehash
+          },
+          deprecatedMms3Url: msg._data.deprecatedMms3Url,
+          isViewOnce: msg._data.isViewOnce,
+          staticUrl: msg._data.staticUrl,
+          download: async () => {
+            return msg.downloadMedia();
+          }
+        }
       };
 
       //Download Mehod;
-      message.media.download = async () => {
-        return msg.downloadMedia();
-      };
+
       //Download;
       //   const media = await msg.downloadMedia();
     } else {
-      message.message.body = msg.body;
+      message.message.body = msg.body as any;
     }
 
     return message;

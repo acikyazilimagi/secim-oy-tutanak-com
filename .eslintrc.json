@@ -1,15 +1,12 @@
 {
   "extends": ["prettier"],
   "plugins": ["prettier", "simple-import-sort"],
-  "parserOptions": {
-    "ecmaFeatures": {
-      "jsx": true
-    }
-  },
+
+  "parser": "@babel/eslint-parser",
   "rules": {
     "quotes": ["error", "double"],
     "prettier/prettier": "error",
-    "no-console": "error",
+    "no-console": "off",
     "simple-import-sort/imports": "error",
     "no-duplicate-imports": "error",
     "no-unused-vars": ["error", { "args": "all", "argsIgnorePattern": "^_" }],
@@ -21,5 +18,9 @@
     "no-dupe-keys": "error",
     "no-dupe-args": "error",
     "no-case-declarations": "error"
+  },
+
+  "env": {
+    "es6": true
   }
 }
