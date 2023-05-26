@@ -16,7 +16,7 @@ const customStyles = {
 };
 
 export function ModalComp() {
-  const [modalIsOpen, setIsOpen] = React.useState(true);
+  const [modalIsOpen, setIsOpen] = React.useState(false);
 
   function closeModal() {
     setIsOpen(false);
