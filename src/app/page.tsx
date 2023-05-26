@@ -45,7 +45,7 @@ export default function Home() {
               ></path>
             </svg>
             <p className="mb-2  text-black font-semibold lg:text-6xl sm:text-3xl md:text-3xl">
-              Oy Tutnağı Resmini Yükle
+              Oy Tutanağı Resmini Yükle
             </p>
           </div>
           <input
