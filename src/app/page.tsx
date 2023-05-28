@@ -1,11 +1,56 @@
 "use client";
 
 import Image from "next/image";
-import React from "react";
+import React, { useEffect } from "react";
 import { ModalComp } from "./modal";
+import axios from "axios";
 
 export default function Home() {
-  const [isModalOpen, setIsModalOpen] = React.useState(true);
+  const [files, setFiles] = React.useState<FileList | null>(null);
+  const [ip, setIP] = React.useState("");
+  const [modalState, setModalState] = React.useState(false);
+  const [modalIsError, setModalIsError] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [errorFileName, setErrorFileName] = React.useState("");
+
+  useEffect(() => {
+    const getData = async () => {
+      const res = await axios.get("https://api.ipify.org/?format=json");
+      if (ip !== res.data.ip) {
+        setIP(res.data.ip);
+      }
+    };
+
+    const photosRequest = [];
+
+    if (files?.length) {
+      getData().then();
+      for (let index = 0; index < files.length; index++) {
+        const file = files[index];
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("ip", ip);
+        setIsLoading(true);
+        photosRequest.push(
+          axios.post("/api/uploadphoto", formData).then((res) => {
+            const message = res.data.message as string;
+            setModalState(true);
+            if (message.includes("success")) {
+              setModalIsError(false);
+            } else {
+              setModalIsError(true);
+              setErrorFileName(res.data.fileName);
+            }
+            setIsLoading(false);
+          })
+        );
+      }
+
+      Promise.all(photosRequest).then(() => {
+        setFiles(null);
+      });
+    }
+  }, [files, ip]);
 
   return (
     <main className="flex min-h-screen flex-col items-center mx-10 pb-10 relative ">
@@ -23,7 +68,8 @@ export default function Home() {
           Tıklayın
         </p>
         <br />
-        <p>28 Mayıs 17:00 dan sonra fotoğraf yüklemek aktif edilecektir.</p>
+
+        {isLoading && <p className="w-full text-center mb-1">Yükleniyor...</p>}
       </div>
       <div className="flex items-center justify-center w-full">
         <label
@@ -60,14 +106,21 @@ export default function Home() {
             id="dropzone-file"
             type="file"
             className="hidden"
-            accept="image/*"
+            accept="image/jpeg, image/png, image/jpg"
             multiple
-            disabled
+            onChange={(e) => {
+              setFiles(e.target.files);
+            }}
           />
         </label>
       </div>
 
-      <ModalComp></ModalComp>
+      <ModalComp
+        modalState={modalState}
+        setModalState={setModalState}
+        modalIsError={modalIsError}
+        errorFileName={errorFileName}
+      />
     </main>
   );
 }
