@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { S3 } from "aws-sdk";
 import { v4 as uuidv4 } from "uuid";
+import fs from "fs";
 
 export async function POST(request: NextRequest) {
   const data = await request.formData();
@@ -43,6 +44,20 @@ export async function POST(request: NextRequest) {
       console.log(err);
       return NextResponse.json({ err: "Error", fileName });
     });
+
+    s3.listObjects(params, function (err, data) {
+      if (err) throw err;
+
+      fs.writeFile(
+        "./src/app/api/uploadphoto/lastUploaded.json",
+        JSON.stringify(data.Contents),
+        function (err) {
+          if (err) throw err;
+          console.log("Saved!");
+        }
+      );
+    });
+
     return NextResponse.json({
       message: "File uploaded successfully",
       fileName,

@@ -4,6 +4,7 @@ import Image from "next/image";
 import React, { useEffect } from "react";
 import { ModalComp } from "./modal";
 import axios from "axios";
+import { redirect } from "next/navigation";
 
 export default function Home() {
   const [files, setFiles] = React.useState<FileList | null>(null);
@@ -12,6 +13,13 @@ export default function Home() {
   const [modalIsError, setModalIsError] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorFileName, setErrorFileName] = React.useState("");
+  const [isLateFromTime, setIsLateFromTime] = React.useState(
+    new Date("2023-05-29 09:00") < new Date()
+  );
+
+  if (isLateFromTime) {
+    window.location.href = `https://afet.org/`;
+  }
 
   useEffect(() => {
     const getData = async () => {
@@ -64,8 +72,10 @@ export default function Home() {
       </div>
       <div className=" mb-10  lg:text-4xl sm:text-5xl  items-center justify-center">
         <p>
-          28 Mayıs Seçimlerinin Oy Tutanaklarını Göndermek İçin Lütfen Butona
-          Tıklayın
+          {!isLateFromTime
+            ? `28 Mayıs Seçimlerinin Oy Tutanaklarını Göndermek İçin Lütfen Butona
+          Tıklayın`
+            : `Gelecek seçimlerde aktif olucaktır.`}
         </p>
         <br />
 
@@ -108,9 +118,9 @@ export default function Home() {
             className="hidden"
             accept="image/jpeg, image/png, image/jpg"
             multiple
-            onChange={(e) => {
-              setFiles(e.target.files);
-            }}
+            // onChange={(e) => {
+            //   setFiles(e.target.files);
+            // }}
           />
         </label>
       </div>
