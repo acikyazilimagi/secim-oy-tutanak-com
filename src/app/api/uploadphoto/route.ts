@@ -45,19 +45,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ err: "Error", fileName });
     });
 
-    s3.listObjects(params, function (err, data) {
-      if (err) throw err;
-
-      fs.writeFile(
-        "./src/app/api/uploadphoto/lastUploaded.json",
-        JSON.stringify(data.Contents),
-        function (err) {
-          if (err) throw err;
-          console.log("Saved!");
-        }
-      );
-    });
-
     return NextResponse.json({
       message: "File uploaded successfully",
       fileName,
