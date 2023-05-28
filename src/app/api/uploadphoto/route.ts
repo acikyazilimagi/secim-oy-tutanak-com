@@ -43,10 +43,12 @@ export async function POST(request: NextRequest) {
       console.log(err);
       return NextResponse.json({ err: "Error", fileName });
     });
+    return NextResponse.json({
+      message: "File uploaded successfully",
+      fileName,
+    });
   } catch (err) {
     console.log(err);
     return NextResponse.json({ err: "Error", fileName });
   }
-
-  return NextResponse.json({ message: "File uploaded successfully", fileName });
 }
