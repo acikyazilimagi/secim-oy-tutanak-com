@@ -29,9 +29,11 @@ export async function POST(request: NextRequest) {
 
     const params = {
       Bucket: process.env.NEXT_S3_BUCKET || "",
-      Key: `tutanak/oytutanak.com/${ip}/${file.name}_lastTimeChanged=${new Date(
+      Key: `tutanak/oytutanak.com/${ip}/lastTimeChanged=${new Date(
         file.lastModified
-      ).toISOString()})_sendingTime=${Date.now().toString()}_${uuidv4()}`,
+      ).toISOString()})_sendingTime=${Date.now().toString()}_${uuidv4()}_${
+        file.name
+      }`,
       Body: await Buffer.from(await file.arrayBuffer()),
     };
 
